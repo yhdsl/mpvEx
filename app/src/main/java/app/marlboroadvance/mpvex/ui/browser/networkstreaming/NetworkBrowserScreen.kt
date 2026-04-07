@@ -181,7 +181,7 @@ private fun NetworkBrowserContent(
       ) {
         EmptyState(
           icon = Icons.Filled.Folder,
-          title = "Error loading files",
+          title = "加载文件时出错",
           message = error,
         )
       }
@@ -194,8 +194,8 @@ private fun NetworkBrowserContent(
       ) {
         EmptyState(
           icon = Icons.Filled.Folder,
-          title = "Empty folder",
-          message = "This folder contains no files or directories",
+          title = "空文件夹",
+          message = "此文件夹不包含视频或子文件夹",
         )
       }
     }
