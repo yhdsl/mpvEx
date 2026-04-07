@@ -227,7 +227,7 @@ fun PlaylistActionSheet(
               enabled = playlistName.isNotBlank(),
               shape = MaterialTheme.shapes.extraLarge,
             ) {
-              Text("取消")
+              Text("创建")
             }
           }
         }
