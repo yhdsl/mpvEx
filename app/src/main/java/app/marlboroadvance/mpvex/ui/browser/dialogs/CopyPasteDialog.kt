@@ -56,7 +56,7 @@ fun FileOperationProgressDialog(
     },
     title = {
       Text(
-        text = "$operationName文件中",
+        text = "$operationName 文件中",
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
       )

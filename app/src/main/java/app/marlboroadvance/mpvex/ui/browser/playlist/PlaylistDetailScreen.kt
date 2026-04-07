@@ -775,7 +775,7 @@ private fun RemoveFromPlaylistDialog(
           shape = MaterialTheme.shapes.extraLarge,
         ) {
           Text(
-            text = "选中的 $itemText将从此播放列表中移除。但原始的文件不会被删除。",
+            text = "选中的 $itemText 将从此播放列表中移除。但原始的文件不会被删除。",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
