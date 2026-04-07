@@ -99,7 +99,7 @@ object AdvancedPreferencesScreen : Screen {
               onFailure = { error ->
                 Toast.makeText(
                   context,
-                  "Export failed: ${error.message}",
+                  "导出时失败: ${error.message}",
                   Toast.LENGTH_LONG,
                 ).show()
               },
@@ -123,7 +123,7 @@ object AdvancedPreferencesScreen : Screen {
               onFailure = { error ->
                 Toast.makeText(
                   context,
-                  "Import failed: ${error.message}",
+                  "导入时失败: ${error.message}",
                   Toast.LENGTH_LONG,
                 ).show()
               },

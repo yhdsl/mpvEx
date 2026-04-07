@@ -188,25 +188,25 @@ object MainScreen : Screen {
           ) {
             NavigationBarItem(
               icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-              label = { Text("Home") },
+              label = { Text("主页") },
               selected = selectedTab == 0,
               onClick = { selectedTab = 0 }
             )
             NavigationBarItem(
               icon = { Icon(Icons.Filled.History, contentDescription = "Recents") },
-              label = { Text("Recents") },
+              label = { Text("最近播放") },
               selected = selectedTab == 1,
               onClick = { selectedTab = 1 }
             )
             NavigationBarItem(
               icon = { Icon(Icons.AutoMirrored.Filled.PlaylistPlay, contentDescription = "Playlists") },
-              label = { Text("Playlists") },
+              label = { Text("播放列表") },
               selected = selectedTab == 2,
               onClick = { selectedTab = 2 }
             )
             NavigationBarItem(
               icon = { Icon(Icons.Filled.Language, contentDescription = "Network") },
-              label = { Text("Network") },
+              label = { Text("网络") },
               selected = selectedTab == 3,
               onClick = { selectedTab = 3 }
             )

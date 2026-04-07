@@ -187,7 +187,7 @@ object RecentlyPlayedScreen : Screen {
     Scaffold(
         topBar = {
           BrowserTopBar(
-            title = "Recently Played",
+            title = "最近播放",
             isInSelectionMode = selectionManager.isInSelectionMode,
             selectedCount = selectionManager.selectedCount,
             totalCount = recentItems.size,
@@ -253,7 +253,7 @@ object RecentlyPlayedScreen : Screen {
               filePicker.launch(arrayOf("video/*"))
             },
             icon = { Icon(Icons.Filled.FileOpen, contentDescription = null) },
-            text = { Text(text = "Open File") },
+            text = { Text(text = "打开文件") },
           )
 
           FloatingActionButtonMenuItem(
@@ -268,7 +268,7 @@ object RecentlyPlayedScreen : Screen {
               }
             },
             icon = { Icon(Icons.Filled.History, contentDescription = null) },
-            text = { Text(text = "Recently Played") },
+            text = { Text(text = "最近播放") },
           )
 
           FloatingActionButtonMenuItem(
@@ -277,7 +277,7 @@ object RecentlyPlayedScreen : Screen {
               showLinkDialog.value = true
             },
             icon = { Icon(Icons.Filled.Link, contentDescription = null) },
-            text = { Text(text = "Open Link") },
+            text = { Text(text = "打开链接") },
           )
         }
       },
@@ -292,8 +292,8 @@ object RecentlyPlayedScreen : Screen {
           ) {
             EmptyState(
               icon = Icons.Filled.History,
-              title = "Recently Played is disabled",
-              message = "Enable it in Advanced Settings to track your playback history",
+              title = "最近播放已被禁用",
+              message = "请在 高级设置 中启用此功能，以记录您的播放历史",
             )
           }
         }
@@ -321,8 +321,8 @@ object RecentlyPlayedScreen : Screen {
           ) {
             EmptyState(
               icon = Icons.Filled.History,
-              title = "No recently played videos",
-              message = "Videos you play will appear here",
+              title = "暂无最近播放的视频",
+              message = "您曾经播放过的视频将显示在此处",
             )
           }
         }
@@ -353,22 +353,22 @@ object RecentlyPlayedScreen : Screen {
       if (deleteDialogOpen.value && selectionManager.isInSelectionMode) {
         // Remove selected items from history
         val itemCount = selectionManager.selectedCount
-        val itemText = if (itemCount == 1) "item" else "items"
+        val itemText = if (itemCount == 1) "条目" else "条目"
         val deleteFiles = deleteFilesCheckbox.value
 
         val title = if (deleteFiles) {
-          "Delete $itemCount $itemText?"
+          "删除 $itemCount 个$itemText?"
         } else {
-          "Remove $itemCount $itemText from history?"
+          "从历史记录中删除 $itemCount 个$itemText?"
         }
 
         val subtitle = buildString {
           if (deleteFiles) {
-            append("This will permanently delete the original video file(s) from your device storage.\n\n")
-            append("This action cannot be undone.")
+            append("这将从您的设备存储中永久删除原始视频文件。\n\n")
+            append("此操作无法撤销。")
           } else {
-            append("This will remove the selected $itemText from your recently played list. ")
-            append("The original video files will not be deleted.")
+            append("这将从您的最近播放列表中移除所选的$itemText。")
+            append("但原始视频文件将不会被删除。")
           }
         }
 
@@ -387,7 +387,7 @@ object RecentlyPlayedScreen : Screen {
                 },
               )
               androidx.compose.material3.Text(
-                text = "Also delete original file(s)",
+                text = "同时也删除原始文件",
                 modifier = Modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.bodyMedium,
               )
