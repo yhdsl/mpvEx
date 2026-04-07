@@ -34,13 +34,21 @@ fun DeleteConfirmationDialog(
 ) {
   if (!isOpen) return
 
-  val itemText = if (itemCount == 1) itemType else "${itemType}s"
+  val itemText = if (itemType == "folder") {
+      "个文件夹"
+  } else if (itemType == "video") {
+      "个视频"
+  } else if (itemType == "file") {
+      "个文件"
+  } else {
+      "个播放列表"
+  }
 
   AlertDialog(
     onDismissRequest = onDismiss,
     title = {
       Text(
-        text = "Delete $itemCount $itemText?",
+        text = "删除 $itemCount $itemText?",
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
       )
@@ -58,7 +66,7 @@ fun DeleteConfirmationDialog(
           modifier = Modifier.fillMaxWidth(),
         ) {
           Text(
-            text = "This action cannot be undone. The selected item${if (itemCount == 1) "" else "s"} will be permanently deleted.",
+            text = "此操作无法撤销。所选项目将被永久删除。",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onErrorContainer,
@@ -125,7 +133,7 @@ fun DeleteConfirmationDialog(
         shape = MaterialTheme.shapes.extraLarge,
       ) {
         Text(
-          text = "Delete",
+          text = "删除",
           fontWeight = FontWeight.Bold,
         )
       }
@@ -135,7 +143,7 @@ fun DeleteConfirmationDialog(
         onClick = onDismiss,
         shape = MaterialTheme.shapes.extraLarge,
       ) {
-        Text("Cancel", fontWeight = FontWeight.Medium)
+        Text("取消", fontWeight = FontWeight.Medium)
       }
     },
     containerColor = MaterialTheme.colorScheme.surface,
