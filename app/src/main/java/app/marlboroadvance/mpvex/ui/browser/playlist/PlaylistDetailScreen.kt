@@ -752,13 +752,13 @@ private fun RemoveFromPlaylistDialog(
 ) {
   if (!isOpen) return
 
-  val itemText = if (itemCount == 1) "个视频" else "个视频"
+  val itemText = if (itemCount == 1) "视频" else "视频"
 
   androidx.compose.material3.AlertDialog(
     onDismissRequest = onDismiss,
     title = {
       Text(
-        text = "从播放列表中移除 $itemCount $itemText?",
+        text = "从播放列表中移除 $itemCount 个视频?",
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
       )
@@ -775,7 +775,7 @@ private fun RemoveFromPlaylistDialog(
           shape = MaterialTheme.shapes.extraLarge,
         ) {
           Text(
-            text = "选中的 $itemText 将从此播放列表中移除。但原始的文件不会被删除。",
+            text = "选中的视频将从此播放列表中移除。但原始的文件不会被删除。",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,

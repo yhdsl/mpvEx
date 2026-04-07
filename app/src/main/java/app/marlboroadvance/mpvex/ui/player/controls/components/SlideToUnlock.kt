@@ -79,7 +79,7 @@ fun SlideToUnlock(
       contentAlignment = Alignment.Center,
     ) {
       Text(
-        text = "Slide to Unlock",
+        text = "滑动解锁",
         color = Color.White.copy(alpha = 0.7f),
         fontSize = 16.sp,
         fontWeight = FontWeight.Medium,

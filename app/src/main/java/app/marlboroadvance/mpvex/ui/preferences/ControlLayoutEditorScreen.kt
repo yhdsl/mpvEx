@@ -150,7 +150,7 @@ data class ControlLayoutEditorScreen(
           ControlRegion.TOP_RIGHT -> "编辑右上角控件"
           ControlRegion.BOTTOM_RIGHT -> "编辑右下角控件"
           ControlRegion.BOTTOM_LEFT -> "编辑左下角控件"
-          ControlRegion.PORTRAIT_BOTTOM -> "Edit Portrait Bottom"
+          ControlRegion.PORTRAIT_BOTTOM -> "编辑底部控件"
         }
       }
 
@@ -363,7 +363,7 @@ data class ControlLayoutEditorScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 androidx.compose.material3.Text(
-                                    text = "所有可用的控件均已使用.",
+                                    text = "所有可用的控件均已被使用。",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
