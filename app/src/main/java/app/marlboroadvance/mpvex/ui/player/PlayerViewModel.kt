@@ -1865,7 +1865,7 @@ class PlayerViewModel(
     } else {
       MPVLib.command("vf", "remove", "@mpvex_hflip")
     }
-    playerUpdate.value = PlayerUpdates.ShowText(if (newMirrorState) "H-Flip On" else "H-Flip Off")
+    playerUpdate.value = PlayerUpdates.ShowText(if (newMirrorState) "水平翻转开启" else "水平翻转关闭")
   }
 
   fun toggleVerticalFlip() {
@@ -1879,7 +1879,7 @@ class PlayerViewModel(
       MPVLib.command("vf", "remove", "@mpvex_vflip")
     }
 
-    playerUpdate.value = PlayerUpdates.ShowText(if (newState) "V-Flip On" else "V-Flip Off")
+    playerUpdate.value = PlayerUpdates.ShowText(if (newState) "垂直翻转开启" else "垂直翻转关闭")
   }
 
   // ==================== Utility ====================

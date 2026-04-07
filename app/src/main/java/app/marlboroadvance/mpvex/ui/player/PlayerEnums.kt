@@ -74,12 +74,12 @@ enum class MPVProfile(
   val displayName: String,
   val value: String,
 ) {
-  Fast("Fast", "fast"),
-  Default("Default", "default"),
-  HighQuality("High Quality", "high-quality"),
-  GpuHQ("GPU HQ", "gpu-hq"),
-  LowLatency("Low Latency", "low-latency"),
-  SwFast("SW Fast", "sw-fast"),
+  Fast("快速", "fast"),
+  Default("默认", "default"),
+  HighQuality("高质量", "high-quality"),
+  GpuHQ("高质量 (GPU)", "gpu-hq"),
+  LowLatency("低延迟", "low-latency"),
+  SwFast("快速 (软解)", "sw-fast"),
   ;
 
   override fun toString(): String = displayName
@@ -165,8 +165,8 @@ enum class FilterPreset(
   val sharpness: Int,
 ) {
   NONE(
-    displayName = "None",
-    description = "Default settings with no adjustments",
+    displayName = "无",
+    description = "无调整的默认设置",
     brightness = 0,
     saturation = 0,
     contrast = 0,
@@ -175,8 +175,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   VIVID(
-    displayName = "Vivid",
-    description = "Enhanced colors with crisp details",
+    displayName = "鲜艳",
+    description = "增强色彩并提升清晰细节",
     brightness = 5,
     saturation = 25,
     contrast = 15,
@@ -185,8 +185,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   WARM_TONE(
-    displayName = "Warm Tone",
-    description = "Warmer colors with golden tint",
+    displayName = "暖色调",
+    description = "更偏暖色，带有金色色调",
     brightness = 5,
     saturation = 10,
     contrast = 5,
@@ -195,8 +195,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   COOL_TONE(
-    displayName = "Cool Tone",
-    description = "Cooler colors with blue tint",
+    displayName = "冷色调",
+    description = "更偏冷色，带有蓝色色调",
     brightness = 0,
     saturation = 5,
     contrast = 10,
@@ -205,8 +205,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   SOFT_PASTEL(
-    displayName = "Soft Pastel",
-    description = "Soft, muted colors with gentle look",
+    displayName = "柔和粉彩",
+    description = "柔和、低饱和度的色彩风格",
     brightness = 10,
     saturation = -15,
     contrast = -10,
@@ -215,8 +215,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   CINEMATIC(
-    displayName = "Cinematic",
-    description = "Film-like color grading with depth",
+    displayName = "电影感",
+    description = "具有电影级调色和层次的色彩风格",
     brightness = -5,
     saturation = -10,
     contrast = 20,
@@ -225,8 +225,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   DRAMATIC(
-    displayName = "Dramatic",
-    description = "High contrast dramatic look",
+    displayName = "高对比度",
+    description = "高对比度的戏剧性效果",
     brightness = -10,
     saturation = 15,
     contrast = 30,
@@ -235,8 +235,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   NIGHT_MODE(
-    displayName = "Night Mode",
-    description = "Reduced brightness for dark environments",
+    displayName = "夜间模式",
+    description = "降低亮度，适合暗光环境",
     brightness = -20,
     saturation = -5,
     contrast = 5,
@@ -245,8 +245,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   NOSTALGIC(
-    displayName = "Nostalgic",
-    description = "Vintage film look with soft focus",
+    displayName = "怀旧",
+    description = "复古胶片风格，柔和质感",
     brightness = 5,
     saturation = -20,
     contrast = 10,
@@ -255,8 +255,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   GHIBLI_STYLE(
-    displayName = "Ghibli Style",
-    description = "Soft, dreamy anime colors",
+    displayName = "吉卜力风格",
+    description = "柔和梦幻的动画色彩",
     brightness = 8,
     saturation = 15,
     contrast = -5,
@@ -265,8 +265,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   NEON_POP(
-    displayName = "Neon Pop",
-    description = "Vibrant neon-like colors with edge",
+    displayName = "霓虹风",
+    description = "高饱和度的霓虹风格色彩",
     brightness = 5,
     saturation = 40,
     contrast = 20,
@@ -275,8 +275,8 @@ enum class FilterPreset(
     sharpness = 0,
   ),
   DEEP_BLACK(
-    displayName = "Deep Black",
-    description = "Enhanced blacks for OLED displays",
+    displayName = "深黑",
+    description = "强化黑色表现，适合 OLED 屏幕",
     brightness = -15,
     saturation = 5,
     contrast = 25,

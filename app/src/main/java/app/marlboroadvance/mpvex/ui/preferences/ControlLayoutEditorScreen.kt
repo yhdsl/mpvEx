@@ -147,9 +147,9 @@ data class ControlLayoutEditorScreen(
     val title =
       remember(region) {
         when (region) {
-          ControlRegion.TOP_RIGHT -> "Edit Top Right"
-          ControlRegion.BOTTOM_RIGHT -> "Edit Bottom Right"
-          ControlRegion.BOTTOM_LEFT -> "Edit Bottom Left"
+          ControlRegion.TOP_RIGHT -> "编辑右上角控件"
+          ControlRegion.BOTTOM_RIGHT -> "编辑右下角控件"
+          ControlRegion.BOTTOM_LEFT -> "编辑左下角控件"
           ControlRegion.PORTRAIT_BOTTOM -> "Edit Portrait Bottom"
         }
       }
@@ -158,8 +158,8 @@ data class ControlLayoutEditorScreen(
 
     if (showResetDialog) {
       ConfirmDialog(
-        title = "Reset to default?",
-        subtitle = "This will reset the controls in this region to their default configuration.",
+        title = "恢复默认布局?",
+        subtitle = "所有自定义的播放器控件布局都将恢复至默认位置",
         onConfirm = {
           prefToEdit.delete()
           selectedButtons = prefToEdit
@@ -228,7 +228,7 @@ data class ControlLayoutEditorScreen(
             // --- 1. Header & Active Selected Zone ---
             item(span = { GridItemSpan(maxLineSpan) }) {
               androidx.compose.material3.Text(
-                      text = "Long press to reorder items. Tap the '-' icon to remove them.",
+                      text = "长按可重新排序控件。点击 '-' 图标可以移除它们。",
                       style = MaterialTheme.typography.bodySmall,
                       color = MaterialTheme.colorScheme.onSurfaceVariant,
                       modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
@@ -263,13 +263,13 @@ data class ControlLayoutEditorScreen(
                                  tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                              )
                              androidx.compose.material3.Text(
-                                  text = "Drop zone is empty",
+                                  text = "可拖放区域为空",
                                   style = MaterialTheme.typography.bodyMedium,
                                   fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                              )
                              androidx.compose.material3.Text(
-                                  text = "Tap buttons from the 'Available Palette' below",
+                                  text = "点击下方 '可用面板' 中的控件",
                                   style = MaterialTheme.typography.labelSmall,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                              )
@@ -363,7 +363,7 @@ data class ControlLayoutEditorScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 androidx.compose.material3.Text(
-                                    text = "All available buttons are in use.",
+                                    text = "所有可用的控件均已使用.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -407,7 +407,7 @@ private fun IconsLegend() {
         ) {
             // Header
             Text(
-                text = "Icons Legend",
+                text = "控件图例",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
