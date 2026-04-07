@@ -74,12 +74,12 @@ enum class MPVProfile(
   val displayName: String,
   val value: String,
 ) {
-  Fast("Fast", "fast"),
-  Default("Default", "default"),
-  HighQuality("High Quality", "high-quality"),
-  GpuHQ("GPU HQ", "gpu-hq"),
-  LowLatency("Low Latency", "low-latency"),
-  SwFast("SW Fast", "sw-fast"),
+  Fast("快速", "fast"),
+  Default("默认", "default"),
+  HighQuality("高质量", "high-quality"),
+  GpuHQ("高质量 (GPU)", "gpu-hq"),
+  LowLatency("低延迟", "low-latency"),
+  SwFast("快速 (软解)", "sw-fast"),
   ;
 
   override fun toString(): String = displayName
