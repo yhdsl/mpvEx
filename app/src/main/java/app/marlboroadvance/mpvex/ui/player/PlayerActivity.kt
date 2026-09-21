@@ -1,4 +1,4 @@
-﻿package app.marlboroadvance.mpvex.ui.player
+package app.marlboroadvance.mpvex.ui.player
 
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -401,6 +401,15 @@ class PlayerActivity :
     // Set HTTP headers (including referer) BEFORE playing the file
     setHttpHeadersFromExtras(intent.extras)
 
+    // Guard against opening a local file that was deleted (e.g. externally)
+    // before it was launched. Avoids a blank/stuck player with no feedback.
+    val initialUri = extractUriFromIntent(intent)
+    if (initialUri != null && isLocalFileMissing(initialUri)) {
+      viewModel.showToast(getString(app.marlboroadvance.mpvex.R.string.toast_file_no_longer_exists))
+      finishAndRemoveTask()
+      return
+    }
+
     getPlayableUri(intent)?.let(player::playFile)
 
     // Only set orientation immediately if NOT in Video mode
@@ -430,6 +439,7 @@ class PlayerActivity :
         val updatedConfiguration = Configuration(originalConfiguration).apply { fontScale = 1f }
         val configurationContext = newBase.createConfigurationContext(updatedConfiguration)
         val configurationDisplayMetrics = configurationContext.resources.displayMetrics
+        @Suppress("DEPRECATION")
         configurationDisplayMetrics.scaledDensity = updatedConfiguration.fontScale * configurationDisplayMetrics.density
         configurationContext
       }
@@ -802,6 +812,7 @@ class PlayerActivity :
 
     // Set status bar color for when it will be shown (with controls)
     if (playerPreferences.showSystemStatusBar.get()) {
+      @Suppress("DEPRECATION")
       window.statusBarColor = android.graphics.Color.parseColor("#80000000") // Semi-transparent black
     }
 
@@ -1984,14 +1995,22 @@ class PlayerActivity :
         val duration = viewModel.duration ?: 0
         val timeRemaining = if (duration > lastPosition) duration - lastPosition else 0
 
+        val currentSid = player.sid
+        val currentSecondarySid = player.secondarySid
+        val (effectiveSid, effectiveSecondarySid) = if (currentSid <= 0 && currentSecondarySid > 0) {
+          currentSecondarySid to -1
+        } else {
+          currentSid to currentSecondarySid
+        }
+
         playbackStateRepository.upsert(
           PlaybackStateEntity(
             mediaTitle = mediaIdentifier,
             lastPosition = lastPosition,
             playbackSpeed = MPVLib.getPropertyDouble("speed") ?: DEFAULT_PLAYBACK_SPEED,
             videoZoom = MPVLib.getPropertyDouble("video-zoom")?.toFloat() ?: 0f,
-            sid = player.sid,
-            secondarySid = player.secondarySid,
+            sid = effectiveSid,
+            secondarySid = effectiveSecondarySid,
             subDelay = ((MPVLib.getPropertyDouble("sub-delay") ?: 0.0) * MILLISECONDS_TO_SECONDS).toInt(),
             subSpeed = MPVLib.getPropertyDouble("sub-speed") ?: DEFAULT_SUB_SPEED,
             aid = player.aid,
@@ -2096,11 +2115,16 @@ class PlayerActivity :
     if (state.sid > 0) {
       player.sid = state.sid
       Log.d(TAG, "Restored primary subtitle track: ${state.sid} (user selection)")
-    }
-
-    if (state.secondarySid > 0) {
-      player.secondarySid = state.secondarySid
-      Log.d(TAG, "Restored secondary subtitle track: ${state.secondarySid} (user selection)")
+      if (state.secondarySid > 0 && state.secondarySid != state.sid) {
+        player.secondarySid = state.secondarySid
+        Log.d(TAG, "Restored secondary subtitle track: ${state.secondarySid} (user selection)")
+      } else {
+        player.secondarySid = -1
+      }
+    } else if (state.secondarySid > 0) {
+      player.sid = state.secondarySid
+      player.secondarySid = -1
+      Log.d(TAG, "Promoted saved secondary subtitle track ${state.secondarySid} to primary: single subtitle must stay at bottom")
     }
 
     if (state.aid > 0) {
@@ -2990,6 +3014,22 @@ class PlayerActivity :
     }
 
     val uri = playlist[index]
+
+    // Skip playlist items whose local file was deleted (e.g. externally) so we
+    // don't get stuck on a missing file. Advance to the next playable item,
+    // or finish if there's nothing left.
+    if (isLocalFileMissing(uri)) {
+      Log.w(TAG, "Skipping missing playlist item at index $index: $uri")
+      viewModel.showToast(getString(app.marlboroadvance.mpvex.R.string.toast_file_no_longer_exists))
+      val nextIndex = index + 1
+      if (nextIndex < playlist.size) {
+        loadPlaylistItemInternal(nextIndex)
+      } else if (playerPreferences.closeAfterReachingEndOfVideo.get()) {
+        finishAndRemoveTask()
+      }
+      return
+    }
+
     val playableUri = uri.openContentFd(this) ?: uri.toString()
 
     // Update playlist index
@@ -3204,7 +3244,9 @@ class PlayerActivity :
   /**
    * Generate a unique identifier for this media for playback state/history.
    *
-   * For local/offline files, uses fileName (display name or path).
+   * For local/offline files, uses fileName plus a hash of the file's stable full
+   * path so that two files with the same name in different directories get
+   * distinct playback histories.
    * For network streams via proxy (SMB/WebDAV/FTP), uses the stable network file path from intent extras.
    * For other network URIs (http/https/rtmp/etc.), uses a hash of the URI string to distinguish different streams.
    */
@@ -3228,8 +3270,11 @@ class PlayerActivity :
     return if (uri != null && (uri.scheme?.startsWith("http") == true || uri.scheme == "rtmp" || uri.scheme == "ftp" || uri.scheme == "rtsp" || uri.scheme == "mms")) {
       // For remote protocols: hash the URI so position is per-episode or per-stream.
       "${fileName}_${uri.toString().hashCode()}"
+    } else if (uri != null) {
+      // For local/file/content uris: include the full path so same-named files
+      // in different directories don't collide.
+      localMediaIdentifier(uri, fileName)
     } else {
-      // For local/file uris and unknown: just use fileName.
       fileName
     }
   }
@@ -3237,15 +3282,121 @@ class PlayerActivity :
   /**
    * Generate a unique identifier for this media from a URI and name.
    *
-   * For local/offline files, uses fileName (display name or path).
+   * For local/offline files, uses fileName plus a hash of the file's stable full
+   * path so that same-named files in different directories are distinct.
    * For network URIs (http/https/rtmp/etc.), uses a hash of the URI string to distinguish different streams.
    */
   private fun getMediaIdentifierFromUri(uri: Uri, fileName: String): String {
     return if (uri.scheme?.startsWith("http") == true || uri.scheme == "rtmp" || uri.scheme == "ftp" || uri.scheme == "rtsp" || uri.scheme == "mms") {
       "${fileName}_${uri.toString().hashCode()}"
     } else {
-      fileName
+      localMediaIdentifier(uri, fileName)
     }
+  }
+
+  /**
+   * Builds a stable, directory-aware identifier for a local file URI.
+   *
+   * The identifier combines the display name with a hash of the file's full path
+   * so that two files with the same name in different folders resolve to
+   * different playback-history keys. The path is resolved to a value that stays
+   * stable across app launches (unlike a temporary file descriptor).
+   */
+  private fun localMediaIdentifier(uri: Uri, fileName: String): String {
+    val stablePath = resolveStableLocalPath(uri)
+    return if (stablePath.isNullOrBlank()) {
+      // Fallback: keep the previous filename-only behavior if we can't resolve a path.
+      fileName
+    } else {
+      // Delegate to the shared helper so deletion/rename cleanup keys match exactly.
+      app.marlboroadvance.mpvex.utils.media.MediaIdentifier.forLocalPath(stablePath)
+    }
+  }
+
+  /**
+   * Resolves a stable, persistent path string for a local file URI, including its
+   * directory. Returns null if no stable path can be determined.
+   *
+   * - file:// -> the URI path (already the full filesystem path)
+   * - content:// -> the real filesystem path via MediaStore DATA, falling back to
+   *   RELATIVE_PATH + DISPLAY_NAME, then the URI string itself.
+   *
+   * Note: [Uri.resolveUri] is intentionally NOT used here because it returns a
+   * temporary /proc/self/fd file descriptor for content URIs, which changes every
+   * session and would not be a stable key.
+   */
+  private fun resolveStableLocalPath(uri: Uri): String? = runCatching {
+    when (uri.scheme) {
+      "file" -> uri.path
+      "content" -> {
+        contentResolver.query(
+          uri,
+          arrayOf(MediaStore.MediaColumns.DATA),
+          null,
+          null,
+          null,
+        )?.use { cursor ->
+          if (cursor.moveToFirst()) {
+            val columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
+            if (columnIndex != -1) cursor.getString(columnIndex) else null
+          } else {
+            null
+          }
+        }?.takeIf { it.isNotBlank() } ?: resolveRelativeContentPath(uri) ?: uri.toString()
+      }
+
+      else -> uri.toString()
+    }
+  }.onFailure { e ->
+    Log.e(TAG, "Error resolving stable local path for $uri", e)
+  }.getOrNull()
+
+  /**
+   * Fallback for content URIs where MediaStore DATA is unavailable (e.g. on newer
+   * Android versions): builds a stable path from RELATIVE_PATH + DISPLAY_NAME.
+   */
+  private fun resolveRelativeContentPath(uri: Uri): String? = runCatching {
+    contentResolver.query(
+      uri,
+      arrayOf(MediaStore.MediaColumns.RELATIVE_PATH, MediaStore.MediaColumns.DISPLAY_NAME),
+      null,
+      null,
+      null,
+    )?.use { cursor ->
+      if (cursor.moveToFirst()) {
+        val relIdx = cursor.getColumnIndex(MediaStore.MediaColumns.RELATIVE_PATH)
+        val nameIdx = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+        val relative = if (relIdx != -1) cursor.getString(relIdx) else null
+        val name = if (nameIdx != -1) cursor.getString(nameIdx) else null
+        if (!relative.isNullOrBlank() && !name.isNullOrBlank()) "$relative$name" else null
+      } else {
+        null
+      }
+    }
+  }.getOrNull()
+
+  /**
+   * Returns true only when the given URI points at a LOCAL file that no longer
+   * exists on disk. Network streams, content URIs we can't resolve to a path,
+   * and existing files all return false (we don't want false positives that
+   * would block legitimate playback).
+   */
+  private fun isLocalFileMissing(uri: Uri): Boolean {
+    // Never treat network streams as "missing".
+    if (uri.scheme?.startsWith("http") == true ||
+      uri.scheme == "rtmp" || uri.scheme == "rtsp" ||
+      uri.scheme == "mms" || uri.scheme == "ftp" || uri.scheme == "ftps"
+    ) {
+      return false
+    }
+
+    val path = when (uri.scheme) {
+      "file" -> uri.path
+      "content" -> resolveStableLocalPath(uri)?.takeIf { it.startsWith("/") }
+      else -> uri.path?.takeIf { it.startsWith("/") }
+    } ?: return false
+
+    return runCatching { !File(path).exists() }.getOrDefault(false)
   }
 
   private fun generatePlaylistFromFolder(currentPath: String) {
