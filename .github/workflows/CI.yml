@@ -32,9 +32,9 @@ jobs:
     - name: Zipalign APK
       run: |
         ZIPALIGN=$ANDROID_HOME/build-tools/36.1.0/zipalign
-        APK=$(find app/build/outputs/apk/standard/release -name "*-unsigned.apk" | head -n 1)
+        APK=$(find app/build/outputs/apk/fdroid/release -name "*-unsigned.apk" | head -n 1)
 
-        $ZIPALIGN -v 4 "$APK" ./app/build/outputs/apk/standard/release/aligned.apk
+        $ZIPALIGN -v 4 "$APK" ./app/build/outputs/apk/fdroid/release/aligned.apk
 
     - name: Sign APK
       run: |
@@ -49,11 +49,11 @@ jobs:
           --v1-signing-enabled true \
           --v2-signing-enabled true \
           --v3-signing-enabled true \
-          --out ./app/build/outputs/apk/standard/release/mpvEx-release.apk \
-          ./app/build/outputs/apk/standard/release/aligned.apk
+          --out ./app/build/outputs/apk/fdroid/release/mpvEx-release.apk \
+          ./app/build/outputs/apk/fdroid/release/aligned.apk
 
     - name: Upload Android binary
       uses: actions/upload-artifact@v7
       with:
         name: mpvEx-android
-        path: ./app/build/outputs/apk/standard/release/mpvEx-release.apk
+        path: ./app/build/outputs/apk/fdroid/release/mpvEx-release.apk
