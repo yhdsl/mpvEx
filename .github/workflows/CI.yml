@@ -32,7 +32,7 @@ jobs:
     - name: Zipalign APK
       run: |
         ZIPALIGN=$ANDROID_HOME/build-tools/36.1.0/zipalign
-        APK=$(find app/build/outputs/apk/standard/release -name "*-unsigned.apk" | head -n 1)
+        APK=app/build/outputs/apk/standard/release/app-standard-arm64-v8a-release-unsigned.apk
 
         $ZIPALIGN -v 4 "$APK" ./app/build/outputs/apk/standard/release/aligned.apk
 
